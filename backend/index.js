@@ -4,7 +4,7 @@ const installRoutes = require("./app/routes/routes");
 
 const app = express();
 
-var corsOptions = { origin: "http://localhost:8081" };
+var corsOptions = { origin: "http://localhost:5173" };
 
 app.use(cors(corsOptions));
 
