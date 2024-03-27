@@ -15,6 +15,8 @@ exports.create = (req, res) => {
    // Create a Client
    const client = {
      name: req.body.name,
+     email: req.body.email,
+     password: req.body.password,
      documentation: req.body.documentation,
      phone: req.body.phone
    };
@@ -49,25 +51,56 @@ exports.findAll = (req, res) => {
 };
 
 // Find a single Client with an id
-exports.findOne = (req, res) => {
-   const id = req.params.id;
+exports.findOne = async (req, res) => {
+  try {
+    const client = await Client.findOne(
+      {
+        raw: true, 
+        where: { email: req.query.email } 
+      }
+    );
+    if (!client) {
+      return res.status(404).send({ message: 'Usuário não encontrado' });
+    }
 
-   Client.findByPk(id)
-      .then(data => {
-         if (data) {
-         res.send(data);
-         } else {
-         res.status(404).send({
-            message: `Cannot find Client with id=${id}.`
-         });
-         }
-      })
-      .catch(err => {
-         res.status(500).send({
-         message: "Error retrieving Client with id=" + id
-         });
-      });
+    if (client.password !== req.query.password) {
+      return res.status(404).send({ message: 'Senha incorreta' });
+    }
+    return res.status(200).send(client);
+  } catch (err) {
+    res.status(500).send({
+      message: 'Erro ao buscar um cliente',
+    });
+  }
 };
+
+// exports.signIn = (req, res) => {
+//   try {
+//     const client = Client.findOne({
+//       raw: true,
+//       where: {
+//         email: req.body.email
+//       },
+//     })
+//     if(!client){
+//       return res.status(404).send({ message: 'User not found'});
+//     }
+
+//     if(client.password !== req.body.password) {
+//       return res.status(404).send({ message: 'Password doenst match'});
+//     }
+
+//     return res.status(200).send({
+//       id: user.id,
+//       name: user.username,
+//       email: user.email,
+//     });
+//   } catch (err) {
+//     res.status(500).send({
+//       message: "Error to log a Client",
+//     });
+//   }
+// };
 
 // Update a Client by the id in the request
 exports.update = (req, res) => {
