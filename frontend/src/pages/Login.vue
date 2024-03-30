@@ -1,12 +1,36 @@
 <script>
+import api from '../utils/api'
+import router from '../utils/routes'
+import { useIsLoggedStore } from '../stores/isLoggedStore';
 export default {
    name: "Login",
    data: () => ({
-      
+      form: {
+         username: "",
+         password: "",
+      },
+      loggedStore: useIsLoggedStore(),
+      routes: router, 
    }),
    methods: {
       async init() {
-         
+         if(this.loggedStore.getIsLoggedIn) {
+            this.$router.push({name: 'home'});
+         }
+      },
+      async doLogin(event) {
+         event.preventDefault();
+         if(this.form.username.trim() == "" && this.form.password.trim() == "") {
+            return
+         }
+         await api.get(`api/clients/email?email=${this.form.username}&password=${this.form.password}`)
+            .then(async (res) => {
+               this.loggedStore.handleWithLogin(this.form.username)
+               this.$router.push({name: 'home'});
+            })
+            .catch(err => {
+               console.log(err)
+            })
       }
    },
    mounted() {
@@ -20,19 +44,29 @@ export default {
       src="https://images.unsplash.com/photo-1638186095900-179bc805de09?q=100&w=2007&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
    >
    <div class="overlay"></div>
-   <div class="form-container">
+   <div class="form-container form2">
       <h2>Faça seu login</h2>
       <form>
          <div class="input-container">
             <label for="username">Usuário</label>
-            <input type="text" name="username" id="username"/>
+            <input 
+               type="text" 
+               name="username" 
+               id="username"
+               v-model="form.username"
+            />
          </div>
          <div class="input-container">
             <label for="password">Senha</label>
-            <input type="password" name="password" id="password"/>
+            <input 
+               type="password"
+               name="password"
+               id="password"
+               v-model="form.password"
+            />
          </div>
          <div class="action-container">
-            <button type="submit">Entrar</button>
+            <button type="submit" @click="(event) => doLogin(event)">Entrar</button>
             <a href="#">Cadastre-se</a>
          </div>
 

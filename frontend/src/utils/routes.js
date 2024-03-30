@@ -4,10 +4,15 @@ import HomeView from '../App.vue'
 import Login from '../pages/Login.vue'
 
 const routes = [
-  { path: '/', component: HomeView },
-  { path: '/login',
-   name: "login",
-   component: Login },
+  { 
+    path: '/',
+    name: 'home',
+    component: HomeView 
+  },
+  { 
+    path: '/login',
+    name: "login",
+    component: Login },
 ]
 
 const router = createRouter({

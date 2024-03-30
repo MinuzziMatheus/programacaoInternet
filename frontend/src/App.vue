@@ -1,5 +1,7 @@
 <script setup>
   // import Clients from './pages/Clients.vue'
+  import { useIsLoggedStore } from './stores/isLoggedStore';
+  useIsLoggedStore()
 </script>
 
 <template>
