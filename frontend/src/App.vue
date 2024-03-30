@@ -1,20 +1,16 @@
 <script setup>
-  // import Clients from './pages/Clients.vue'
+  import Header from './components/Header.vue'
+  import Home from './pages/Home.vue'
+  import { RouterView } from 'vue-router'
   import { useIsLoggedStore } from './stores/isLoggedStore';
   useIsLoggedStore()
 </script>
 
 <template>
-  <nav>
-    <RouterLink to="/">Go to Home </RouterLink>
-    <RouterLink to="/login">Go to Login</RouterLink>
-  </nav>
-
-  <main>
-    <RouterView />
-  </main>
-
-  <!-- <Clients /> -->
+  <div>
+    <Header />
+    <router-view />
+  </div>
 </template>
 
 <style lang="scss" scoped>
