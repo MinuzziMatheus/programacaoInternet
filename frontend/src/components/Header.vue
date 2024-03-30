@@ -26,11 +26,12 @@ export default {
             <li><RouterLink to="/">Home </RouterLink></li>
          </ul>
       </nav>
-      <button @click="goToLoginPage">Acesse já</button>
+      <button @click="goToLoginPage">Log In</button>
    </header>
 </template>
 <style lang="scss" scoped>
    header {
+      z-index: 10;
       position: fixed;
       padding: 10px 30px;
       display: flex;
@@ -98,6 +99,19 @@ export default {
          &:hover {
             background-color: #FFF;
             color: #ba0f29;
+         }
+      }
+
+      @media screen and (max-width: 920px) {
+         ul {
+            padding: 0;
+         }
+         img {
+            display: none;
+         }
+
+         nav {
+            padding: 0;
          }
       }
    }
