@@ -19,7 +19,7 @@ export default {
    methods: {
       async init() {
          if(this.loggedStore.getIsLoggedIn) {
-            this.$router.push({name: 'home'});
+            this.$router.push({name: 'Home'});
          }
       },
       async doLogin(event) {
@@ -30,7 +30,7 @@ export default {
          await api.get(`api/clients/email?email=${this.form.email}&password=${this.form.password}`)
             .then(async (res) => {
                this.loggedStore.handleWithLogin(this.form.email)
-               this.$router.push({name: 'home'});
+               this.$router.push({name: 'Home'});
             })
             .catch(err => {
                console.log(err)

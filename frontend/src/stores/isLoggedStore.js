@@ -16,6 +16,11 @@ export const useIsLoggedStore = defineStore("isLoggedIn", {
       handleWithLogin(user) {
          this.isLoggedIn = true,
          this.username = user
-      }
+      },
+      handleWithLogout(){
+         console.log("chamou")
+         this.isLoggedIn = false,
+         this.username = ""
+      },
    }
 })

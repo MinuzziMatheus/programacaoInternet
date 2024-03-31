@@ -1,15 +1,20 @@
 <script>
+import { useIsLoggedStore } from '../stores/isLoggedStore';
 export default {
    name: "Header",
    data: () => ({
-      
+      loggedStore: useIsLoggedStore(),
+      isLogged: false,
    }),
    methods: {
-      async init() {
-
+      init() {
+         this.isLogged = this.loggedStore.getIsLoggedIn
       },
-      goToLoginPage(){
+      goToLoginPage() {
          this.$router.push({name: 'login'});
+      },
+      doLogout() {
+         this.isLogged = this.loggedStore.handleWithLogout()
       }
    },
    mounted() {
@@ -20,13 +25,14 @@ export default {
 
 <template>
    <header>
-      <img src="../assets/vinho.png" alt="">
+      <img class="logo" src="../assets/vinho.png" alt="">
       <nav>
          <ul>
             <li><RouterLink to="">Home </RouterLink></li>
          </ul>
       </nav>
-      <button @click="goToLoginPage">Log In</button>
+      <button v-if="!isLogged" @click="goToLoginPage">Log In</button>
+      <img class="logout" v-if="isLogged" @click="doLogout" src="../assets/icons/logout.svg" alt="">
    </header>
 
    <router-view></router-view>
@@ -44,7 +50,7 @@ export default {
       height: 100px;
       width: 100vw;
 
-      img {
+      .logo {
          height: 100%;
       }
 
@@ -73,8 +79,13 @@ export default {
                a{
                   font-size: 1.5rem;
                   text-transform: uppercase;
+                  color: rgb(211, 207, 207);
+               }
+
+               a.active {
                   color: #FFF;
                }
+               
                &::after {
                   content: " ";
                   background-color: #FFF;
@@ -106,11 +117,16 @@ export default {
          }
       }
 
+      .logout {
+         height: 40px;
+         cursor: pointer;
+      }
+
       @media screen and (max-width: 920px) {
          ul {
             padding: 0;
          }
-         img {
+         .logo {
             display: none;
          }
 
