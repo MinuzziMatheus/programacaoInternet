@@ -23,11 +23,13 @@ export default {
       <img src="../assets/vinho.png" alt="">
       <nav>
          <ul>
-            <li><RouterLink to="/">Home </RouterLink></li>
+            <li><RouterLink to="">Home </RouterLink></li>
          </ul>
       </nav>
       <button @click="goToLoginPage">Log In</button>
    </header>
+
+   <router-view></router-view>
 </template>
 <style lang="scss" scoped>
    header {

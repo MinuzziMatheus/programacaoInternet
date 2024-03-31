@@ -11,6 +11,10 @@ const get = (endpoint) => {
    return api.get(endpoint)
 }
 
+const post = (endpoint, content) => {
+   return api.post(endpoint, content)
+}
+
 export default {
-   get
+   get, post
 }

@@ -6,9 +6,13 @@ export default {
    name: "Login",
    data: () => ({
       form: {
-         username: "",
+         name: "",
+         email: "",
          password: "",
+         documentation: "",
+         phone: ""
       },
+      registering: false,
       loggedStore: useIsLoggedStore(),
       routes: router, 
    }),
@@ -20,17 +24,42 @@ export default {
       },
       async doLogin(event) {
          event.preventDefault();
-         if(this.form.username.trim() == "" && this.form.password.trim() == "") {
+         if(this.form.email.trim() == "" && this.form.password.trim() == "") {
             return
          }
-         await api.get(`api/clients/email?email=${this.form.username}&password=${this.form.password}`)
+         await api.get(`api/clients/email?email=${this.form.email}&password=${this.form.password}`)
             .then(async (res) => {
-               this.loggedStore.handleWithLogin(this.form.username)
+               this.loggedStore.handleWithLogin(this.form.email)
                this.$router.push({name: 'home'});
             })
             .catch(err => {
                console.log(err)
             })
+      },
+      async doRegister(event) {
+         event.preventDefault();
+         if(this.form.email.trim() == "" && this.form.password.trim() == "") {
+            return
+         }
+         await api.post(`api/clients/`, {
+               "name": this.form.name,
+               "email": this.form.email,
+               "password": this.form.password,
+               "documentation": this.form.documentation,
+               "phone": this.form.phone
+            })
+            .then(async (res) => {
+               console.log(res)
+            })
+            .catch(err => {
+               console.log(err)
+            })
+      },
+      isRegistering() {
+         this.registering = !this.registering
+      },
+      goToHome() {
+         this.$router.push({path: '/', name: 'Home'});
       }
    },
    mounted() {
@@ -45,15 +74,17 @@ export default {
    >
    <div class="overlay"></div>
    <div class="form-container form2">
-      <h2>Faça seu login</h2>
-      <form>
+      <img @click="goToHome" class="arrow" src="../assets/icons/arrow.svg" alt="">
+      <h2 v-if="!registering">Faça seu login</h2>
+      <h2 v-else>Registre-se</h2>
+      <form v-if="!registering">
          <div class="input-container">
-            <label for="username">Usuário</label>
+            <label for="email">E-mail</label>
             <input 
                type="text" 
-               name="username" 
-               id="username"
-               v-model="form.username"
+               name="email" 
+               id="email"
+               v-model="form.email"
             />
          </div>
          <div class="input-container">
@@ -67,9 +98,62 @@ export default {
          </div>
          <div class="action-container">
             <button type="submit" @click="(event) => doLogin(event)">Entrar</button>
-            <a href="#">Cadastre-se</a>
+            <span @click="isRegistering">Cadastre-se</span>
          </div>
 
+      </form>
+      <form v-else id="formRegister">
+         <div class="input-container">
+            <label for="name">Usuário</label>
+            <input 
+               type="text" 
+               name="name" 
+               id="name"
+               v-model="form.name"
+            />
+         </div>
+         <div class="input-container">
+            <label for="email">E-mail</label>
+            <input 
+               type="email" 
+               name="email" 
+               id="email"
+               v-model="form.email"
+            />
+         </div>
+         <div class="input-container">
+            <label for="password">Senha</label>
+            <input 
+               type="password"
+               name="password"
+               id="password"
+               v-model="form.password"
+            />
+         </div>
+         <div class="input-container">
+            <label for="documentation">CPF</label>
+            <input 
+               type="text"
+               name="documentation"
+               id="documentation"
+               v-model="form.documentation"
+            />
+         </div>
+         <div class="input-container">
+            <label for="phone">Celular</label>
+            <input 
+               type="text"
+               name="phone"
+               id="phone"
+               v-model="form.phone"
+            />
+         </div>
+         <div class="action-container">
+            <button v-if="!registering" type="submit" @click="(event) => doLogin(event)">Entrar</button>
+            <button v-if="registering" type="submit" @click="(event) => doRegister(event)">Cadastrar</button>
+            <span v-if="!registering" @click="isRegistering" >Cadastre-se</span>
+            <span v-if="registering" @click="isRegistering" >Entrar</span>
+         </div>
       </form>
    </div>
 </template>
@@ -96,13 +180,29 @@ export default {
       z-index: -1;
    }
 
+   .arrow {
+      position: absolute;
+      top: 20px;
+      left: 10px;
+      height: 30px;
+      width: 30px;
+      cursor: pointer;
+
+      &:hover {
+         transform: scale(1.1, 1.1);
+      }
+   }
+
    .form-container {
+      position: relative;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 400px;
+      height: auto;
+      min-height: 400px;
       width: 380px;
+      padding: 20px 0;
       border-radius: 15px;
       color: #FFF;
       background-color: #480610;
@@ -172,9 +272,10 @@ export default {
             }
          }
    
-         a {
+         span {
             font-size: 12px;
             color: #FFF;
+            cursor: pointer;
             
             &:hover {
                text-decoration: underline;
