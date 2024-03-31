@@ -54,6 +54,8 @@ export default {
          width: 40%;
 
          h1 {
+            text-transform: capitalize;
+            text-align: left;
             margin-bottom: 1rem;
          }
 

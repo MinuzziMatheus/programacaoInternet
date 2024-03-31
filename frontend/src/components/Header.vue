@@ -71,6 +71,8 @@ export default {
                position: relative;
 
                a{
+                  font-size: 1.5rem;
+                  text-transform: uppercase;
                   color: #FFF;
                }
                &::after {
