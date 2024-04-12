@@ -2,9 +2,12 @@
 import api from '../utils/api'
 import router from '../utils/routes'
 import { useIsLoggedStore } from '../stores/isLoggedStore';
+import useValidate from "@vuelidate/core";
+import { required, email, minLength } from '@vuelidate/validators'
 export default {
    name: "Login",
    data: () => ({
+      v$: useValidate(),
       form: {
          name: "",
          email: "",
@@ -12,10 +15,18 @@ export default {
          documentation: "",
          phone: ""
       },
+      image: "",
+      msg: [],
       registering: false,
       loggedStore: useIsLoggedStore(),
       routes: router, 
    }),
+   validations() {
+      return {
+         email: { required, email },
+         password: { required, minLength: minLength(5)},
+      }
+   },
    methods: {
       async init() {
          if(this.loggedStore.getIsLoggedIn) {
@@ -38,28 +49,51 @@ export default {
       },
       async doRegister(event) {
          event.preventDefault();
-         if(this.form.email.trim() == "" && this.form.password.trim() == "") {
-            return
+         this.v$.$validate()
+         if(!this.v$.$error){
+            if(this.form.email.trim() == "" && this.form.password.trim() == "") {
+               return
+            }
+            await api.post(`api/clients/`, {
+                  "name": this.form.name,
+                  "email": this.form.email,
+                  "password": this.form.password,
+                  "documentation": this.form.documentation,
+                  "phone": this.form.phone
+               })
+               .then(async (res) => {
+                  console.log(res)
+               })
+               .catch(err => {
+                  console.log(err)
+               })
          }
-         await api.post(`api/clients/`, {
-               "name": this.form.name,
-               "email": this.form.email,
-               "password": this.form.password,
-               "documentation": this.form.documentation,
-               "phone": this.form.phone
-            })
-            .then(async (res) => {
-               console.log(res)
-            })
-            .catch(err => {
-               console.log(err)
-            })
       },
       isRegistering() {
          this.registering = !this.registering
       },
       goToHome() {
          this.$router.push({path: '/', name: 'Home'});
+      },
+      validateEmail() {
+         if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(this.email)) {
+            this.msg['email'] = 'Please enter a valid email address';
+         } else {
+            this.msg['email'] = '';
+         }
+      },
+      handleImage(e) {
+         const selectedImage = e.target.files[0]
+         this.createBase64Image(selectedImage)
+      },
+      createBase64Image(fileObject) {
+         const reader = new FileReader()
+
+         reader.onload = (e) => {
+            this.image = e.target.result
+         }
+
+         reader.readAsBinaryString(fileObject)
       }
    },
    mounted() {
@@ -84,8 +118,11 @@ export default {
                type="text" 
                name="email" 
                id="email"
+               placeholder="email@example.com"
+               @blur="validateEmail"
                v-model="form.email"
             />
+            <span v-if="v$.email.$error">{{v$.email.email.$message}}</span>
          </div>
          <div class="input-container">
             <label for="password">Senha</label>
@@ -95,6 +132,7 @@ export default {
                id="password"
                v-model="form.password"
             />
+            <span v-if="v$.password.$error">{{v$.password.$errors[0].$message}}</span>
          </div>
          <div class="action-container">
             <button type="submit" @click="(event) => doLogin(event)">Entrar</button>
@@ -104,7 +142,17 @@ export default {
       </form>
       <form v-else id="formRegister">
          <div class="input-container">
+            <label for="profileImg">Usuário</label>
+            <input 
+               type="file" 
+               name="profileImg"
+               id="profileImg"
+               @change="handleImage"
+            />
+         </div>
+         <div class="input-container">
             <label for="name">Usuário</label>
+            <img :src="image" alt="">
             <input 
                type="text" 
                name="name" 
