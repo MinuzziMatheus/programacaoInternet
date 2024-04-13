@@ -13,9 +13,9 @@ export default {
          email: "",
          password: "",
          documentation: "",
-         phone: ""
+         phone: "",
+         image: "",
       },
-      image: "",
       msg: [],
       registering: false,
       loggedStore: useIsLoggedStore(),
@@ -50,7 +50,7 @@ export default {
       async doRegister(event) {
          event.preventDefault();
          this.v$.$validate()
-         if(!this.v$.$error){
+         // if(!this.v$.$error){
             if(this.form.email.trim() == "" && this.form.password.trim() == "") {
                return
             }
@@ -59,7 +59,8 @@ export default {
                   "email": this.form.email,
                   "password": this.form.password,
                   "documentation": this.form.documentation,
-                  "phone": this.form.phone
+                  "phone": this.form.phone,
+                  "image": this.form.image
                })
                .then(async (res) => {
                   console.log(res)
@@ -67,7 +68,7 @@ export default {
                .catch(err => {
                   console.log(err)
                })
-         }
+         // }
       },
       isRegistering() {
          this.registering = !this.registering
@@ -90,7 +91,7 @@ export default {
          const reader = new FileReader()
 
          reader.onload = (e) => {
-            this.image = e.target.result
+            this.form.image = e.target.result
          }
 
          reader.readAsBinaryString(fileObject)
@@ -152,7 +153,7 @@ export default {
          </div>
          <div class="input-container">
             <label for="name">Usuário</label>
-            <img :src="image" alt="">
+            <img :src="form.image" alt="">
             <input 
                type="text" 
                name="name" 

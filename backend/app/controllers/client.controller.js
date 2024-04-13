@@ -1,24 +1,33 @@
 const db = require("../models");
 const Client = db.clients;
+const fs = require("fs")
 const Op = db.Sequelize.Op;
 
 // Create and Save a new Client
 exports.create = (req, res) => {
    // Validate request
-   if (!req.body.name) {
-     res.status(400).send({
-       message: "Content can not be empty!"
-     });
-     return;
-   }
- 
-   // Create a Client
+  if (!req.body.name) {
+    res.status(400).send({
+      message: "Content can not be empty!"
+    });
+    return;
+  }
+  console.log(req.body.image)
+  const path = `/home/minuzzi/Documents/www/programacaoInternet/backend/public/${req.body.documentation}/`
+  const fileName = req.body.name.replace(/\s/g, '')+".svg"
+  const createDirIfNotExists = dir =>
+  !fs.existsSync(dir) ? fs.mkdirSync(dir) : undefined;
+
+  createDirIfNotExists(path);
+  fs.writeFileSync(`${path}${fileName}`, req.body.image)
+  // Create a Client
    const client = {
      name: req.body.name,
      email: req.body.email,
      password: req.body.password,
      documentation: req.body.documentation,
-     phone: req.body.phone
+     phone: req.body.phone,
+     image: `${path}${fileName}`
    };
    // Save Client in the database
    Client.create(client)
