@@ -28,7 +28,8 @@ export default {
       <img class="logo" src="../assets/vinho.png" alt="">
       <nav>
          <ul>
-            <li><RouterLink to="">Home </RouterLink></li>
+            <li><RouterLink to="/home">Home </RouterLink></li>
+            <li><RouterLink to="/clients">Clients </RouterLink></li>
          </ul>
       </nav>
       <button v-if="!isLogged" @click="goToLoginPage">Log In</button>

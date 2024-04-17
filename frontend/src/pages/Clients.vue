@@ -1,7 +1,7 @@
 <script>
 import api from '../utils/api'
 export default {
-   name: "Clients List",
+   name: "Clients",
    data: () => ({
       clients: [],
    }),
@@ -10,10 +10,20 @@ export default {
          await api.get('/api/clients/')
             .then(async (res) => {
                this.clients = res.data
+               console.log(this.clients)
             })
             .catch(err => {
                console.log(err)
             })
+      },
+      async deleteUser(id) {
+         await api.deleteUser('/api/clients/'+id)
+         .then(async (res) => {
+            alert("Cliente deletado com sucesso!")
+         })
+         .catch(err => {
+            console.log(err)
+         })
       }
    },
    mounted() {
@@ -23,12 +33,32 @@ export default {
 </script>
 <template>
    <div>
-      <ul v-for="client in clients" :key="client.id" >
-         <li :id="client.id">{{ client.name }}</li>
-      </ul>
+      <table v-if="clients.length > 0">
+         <thead>
+            <th>Nome</th>
+            <th>Email</th>
+            <th>Documento</th>
+            <th>Número</th>
+            <th>Ação</th>
+         </thead>
+         <tbody>
+            <tr v-for="client in clients" :key="client.id" >
+               <td>{{ client.name }}</td>
+               <td>{{ client.email }}</td>
+               <td>{{ client.documentation }}</td>
+               <td>{{ client.phone }}</td>
+               <td><button type="button" @click="deleteUser(client.id)">Apagar usuário</button></td>
+            </tr>
+         </tbody>
+      </table>
    </div>
 </template>
 
 <style lang="scss" scoped>
-
+   tbody {
+      overflow-x: auto;
+   }
+   td {
+      padding: 10px;
+   }
 </style>

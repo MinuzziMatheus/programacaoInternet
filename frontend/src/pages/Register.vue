@@ -57,7 +57,7 @@ export default {
          }
       },
       goToHome() {
-         this.$router.push({path: '/', name: 'Home'});
+         this.$router.push({path: '/home', name: 'Home'});
       },
       handleImage(e) {
          const selectedImage = e.target.files[0]

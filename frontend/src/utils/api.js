@@ -15,6 +15,10 @@ const post = (endpoint, content) => {
    return api.post(endpoint, content)
 }
 
+const deleteUser = (endpoint, content) => {
+   return api.delete(endpoint, content)
+}
+
 export default {
-   get, post
+   get, post, deleteUser
 }

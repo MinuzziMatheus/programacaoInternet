@@ -3,7 +3,7 @@ import api from '../utils/api'
 import router from '../utils/routes'
 import { useIsLoggedStore } from '../stores/isLoggedStore';
 import useValidate from "@vuelidate/core";
-import { required, email, minLength } from '@vuelidate/validators'
+import { required, email } from '@vuelidate/validators'
 export default {
    name: "Login",
    data: () => ({
@@ -49,7 +49,7 @@ export default {
          this.registering = !this.registering
       },
       goToHome() {
-         this.$router.push({path: '/', name: 'Home'});
+         this.$router.push({path: '/home', name: 'Home'});
       },
       validateEmail() {
          if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(this.email)) {

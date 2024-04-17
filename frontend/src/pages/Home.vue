@@ -1,12 +1,14 @@
 <script>
+import { useIsLoggedStore } from '../stores/isLoggedStore';
 export default {
    name: "Home",
    data: () => ({
-      
+      loggedStore: useIsLoggedStore(),
+      isLogged: false,
    }),
    methods: {
       async init() {
-
+         this.isLogged = this.loggedStore.getIsLoggedIn
       }
    },
    mounted() {
@@ -21,9 +23,11 @@ export default {
       <div class="title-container">
          <h1>Discover The Exquisite Wine Finery</h1>
          <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+         <div v-if="isLogged">
+            <RouterLink to="/clients">Veja os nossos clientes </RouterLink>
+         </div>
       </div>
       <div class="img-container">
-         <!-- <img src="https://images.unsplash.com/photo-1553361371-9b22f78e8b1d?q=80&w=1087&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt=""> -->
          <img src="https://images.unsplash.com/photo-1423483641154-5411ec9c0ddf?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="">
       </div>
    </article>
