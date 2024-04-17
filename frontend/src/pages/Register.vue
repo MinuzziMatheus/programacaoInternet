@@ -1,63 +1,77 @@
 <script>
 import api from '../utils/api'
 import router from '../utils/routes'
-import { useIsLoggedStore } from '../stores/isLoggedStore';
 import useValidate from "@vuelidate/core";
 import { required, email, minLength } from '@vuelidate/validators'
 export default {
-   name: "Login",
+   name: "Register",
    data: () => ({
       v$: useValidate(),
       form: {
+         name: "",
          email: "",
          password: "",
+         documentation: "",
+         phone: "",
+         image: "",
       },
       msg: [],
-      registering: false,
-      loggedStore: useIsLoggedStore(),
       routes: router, 
    }),
    validations() {
       return {
          form: {
+            name: { required, minLength: minLength(5)},
             email: { required, email },
-            password: { required },
+            password: { required, minLength: minLength(5)},
+            documentation: { required, minLength: minLength(10)},
+            phone: { required, minLength: minLength(10)},
+            image: { required }
          }
       }
    },
    methods: {
       async init() {
-         if(this.loggedStore.getIsLoggedIn) {
-            this.$router.push({name: 'Home'});
-         }
       },
-      async doLogin(event) {
+      async doRegister(event) {
          event.preventDefault();
          const result = await this.v$.$validate()
          if(result){
-            await api.get(`api/clients/email?email=${this.form.email}&password=${this.form.password}`)
+            if(this.form.email.trim() == "" && this.form.password.trim() == "") {
+               return
+            }
+            await api.post(`api/clients/`, {
+                  "name": this.form.name,
+                  "email": this.form.email,
+                  "password": this.form.password,
+                  "documentation": this.form.documentation,
+                  "phone": this.form.phone,
+                  "image": this.form.image
+               })
                .then(async (res) => {
-                  this.loggedStore.handleWithLogin(this.form.email)
-                  this.$router.push({name: 'Home'});
+                  alert("Cadastro realizado com sucesso!")
                })
                .catch(err => {
                   console.log(err)
                })
          }
       },
-      isRegistering() {
-         this.registering = !this.registering
-      },
       goToHome() {
          this.$router.push({path: '/', name: 'Home'});
       },
-      validateEmail() {
-         if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(this.email)) {
-            this.msg['email'] = 'Please enter a valid email address';
-         } else {
-            this.msg['email'] = '';
-         }
+      handleImage(e) {
+         const selectedImage = e.target.files[0]
+         this.createBase64Image(selectedImage)
       },
+      createBase64Image(fileObject) {
+         const reader = new FileReader()
+
+         reader.onload = (e) => {
+            this.form.image = e.target.result
+         }
+
+         reader.readAsBinaryString(fileObject)
+      }
    },
    mounted() {
       this.init()
@@ -72,16 +86,35 @@ export default {
    <div class="overlay"></div>
    <div class="form-container form2">
       <img @click="goToHome" class="arrow" src="../assets/icons/arrow.svg" alt="">
-      <h2 v-if="!registering">Faça seu login</h2>
-      <h2 v-else>Registre-se</h2>
-      <form v-if="!registering">
+      <h2>Registre-se</h2>
+      <form id="formRegister">
+         <div class="input-container">
+            <label for="profileImg">Imagem perfil</label>
+            <input 
+               type="file" 
+               name="profileImg"
+               id="profileImg"
+               @change="handleImage"
+            />
+            <span v-if="v$.form.image.$error">{{v$.form.image.$errors[0].$message}}</span>
+         </div>
+         <div class="input-container">
+            <label for="name">Usuário</label>
+            <img :src="form.image" alt="">
+            <input 
+               type="text" 
+               name="name" 
+               id="name"
+               v-model="form.name"
+            />
+            <span v-if="v$.form.name.$error">{{v$.form.name.$errors[0].$message}}</span>
+         </div>
          <div class="input-container">
             <label for="email">E-mail</label>
             <input 
-               type="text" 
+               type="email" 
                name="email" 
                id="email"
-               placeholder="email@example.com"
                v-model="form.email"
             />
             <span v-if="v$.form.email.$error">{{v$.form.email.$errors[0].$message}}</span>
@@ -96,9 +129,28 @@ export default {
             />
             <span v-if="v$.form.password.$error">{{v$.form.password.$errors[0].$message}}</span>
          </div>
+         <div class="input-container">
+            <label for="documentation">CPF</label>
+            <input 
+               type="text"
+               name="documentation"
+               id="documentation"
+               v-model="form.documentation"
+            />
+            <span v-if="v$.form.documentation.$error">{{v$.form.documentation.$errors[0].$message}}</span>
+         </div>
+         <div class="input-container">
+            <label for="phone">Celular</label>
+            <input 
+               type="text"
+               name="phone"
+               id="phone"
+               v-model="form.phone"
+            />
+            <span v-if="v$.form.phone.$error">{{v$.form.phone.$errors[0].$message}}</span>
+         </div>
          <div class="action-container">
-            <button type="submit" @click="(event) => doLogin(event)">Entrar</button>
-            <RouterLink to="/register">Cadastre-se</RouterLink>
+            <button type="submit" @click="(event) => doRegister(event)">Cadastrar</button>
          </div>
       </form>
    </div>
@@ -218,7 +270,7 @@ export default {
             }
          }
    
-         a {
+         span {
             font-size: 12px;
             color: #FFF;
             cursor: pointer;
